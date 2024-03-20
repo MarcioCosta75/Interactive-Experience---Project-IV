@@ -3,6 +3,7 @@ using UnityEngine;
 public class JackBehavior : MonoBehaviour
 {
     public Transform queen;
+    public GameObject gameOverPanel; // Referência ao painel de Game Over
     public float offsetFromQueen = 1.0f; // Distância lateral de Jack em relação à Queen
     public float minDistanceFromQueen = 3.0f; // Distância mínima de Jack em relação à Queen
 
@@ -38,6 +39,15 @@ public class JackBehavior : MonoBehaviour
         if (collision.gameObject.CompareTag("King"))
         {
             Debug.Log("Game Over: Jack caught the King!");
+            Time.timeScale = 0; // Congela o jogo
+            if (gameOverPanel != null)
+            {
+                gameOverPanel.SetActive(true); // Ativa o painel de Game Over
+            }
+            else
+            {
+                Debug.LogError("Game Over Panel não está configurado no JackBehavior.");
+            }
             gameObject.SetActive(false); // Desativa Jack
         }
     }

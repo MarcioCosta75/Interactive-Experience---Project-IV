@@ -8,6 +8,17 @@ public class KissDetector : MonoBehaviour
         if (collision.gameObject.CompareTag("Queen"))
         {
             Debug.Log("Kiss detected!");
+
+            // Incrementa a contagem de kisses
+            if (KissCounter.instance != null)
+            {
+                KissCounter.instance.IncrementKissCount();
+            }
+            else
+            {
+                Debug.LogError("Não foi possível encontrar uma instância de KissCounter.");
+            }
+
             // Chama o método RespawnQueen do script QueenSpawnController, que está anexado à Queen
             QueenSpawnController queenController = collision.gameObject.GetComponent<QueenSpawnController>();
             if (queenController != null)
