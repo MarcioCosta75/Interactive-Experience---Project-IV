@@ -1,6 +1,5 @@
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
+using TMPro; // Necessário para usar TextMeshPro
 
 public class KissCounter : MonoBehaviour
 {
@@ -25,5 +24,11 @@ public class KissCounter : MonoBehaviour
     {
         kissCount++; // Incrementa o contador de kisses
         kissCountText.text = "Kisses: " + kissCount; // Atualiza o texto na UI
+    }
+
+    // Método para acessar a contagem de beijos
+    public int GetKissCount()
+    {
+        return kissCount;
     }
 }
