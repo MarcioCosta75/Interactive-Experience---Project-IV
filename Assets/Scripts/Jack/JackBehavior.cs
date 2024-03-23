@@ -3,9 +3,12 @@ using UnityEngine;
 public class JackBehavior : MonoBehaviour
 {
     public Transform queen;
+    public Transform king; // Certifique-se de que isso está referenciado no Unity Inspector
     public GameObject gameOverPanel; // Referência ao painel de Game Over
     public float offsetFromQueen = 1.0f; // Distância lateral de Jack em relação à Queen
     public float minDistanceFromQueen = 3.0f; // Distância mínima de Jack em relação à Queen
+    public float minX = -6.2f; // Limite mínimo no eixo X para o spawn do Jack
+    public float maxX = 6.2f; // Limite máximo no eixo X para o spawn do Jack
 
     void OnEnable()
     {
@@ -14,23 +17,17 @@ public class JackBehavior : MonoBehaviour
 
     void PositionJackNextToQueen()
     {
-        float side = Random.value < 0.5f ? -1.0f : 1.0f; // Determina aleatoriamente de qual lado da Queen Jack aparecerá
-        Vector3 potentialPosition = new Vector3(queen.position.x + side * offsetFromQueen, queen.position.y, queen.position.z);
+        // Calcula o ponto médio entre a Queen e o King
+        float midpointX = (queen.position.x + king.position.x) / 2;
+        float side = king.position.x < queen.position.x ? 1.0f : -1.0f;
 
-        // Verifica se a posição pretendida está muito próxima da Queen e ajusta se necessário
-        if (Mathf.Abs(potentialPosition.x - queen.position.x) < minDistanceFromQueen)
-        {
-            // Ajusta a posição do Jack para garantir o offset mínimo
-            if (side < 0) // Jack estava à esquerda da Queen, mova-o mais para a esquerda
-            {
-                potentialPosition.x = queen.position.x - minDistanceFromQueen;
-            }
-            else // Jack estava à direita da Queen, mova-o mais para a direita
-            {
-                potentialPosition.x = queen.position.x + minDistanceFromQueen;
-            }
-        }
+        // Posiciona o Jack no meio do caminho entre a Queen e o King, mas dentro dos limites minX e maxX
+        Vector3 potentialPosition = new Vector3(midpointX + side * offsetFromQueen, queen.position.y, queen.position.z);
 
+        // Garante que o Jack não ultrapasse os limites estabelecidos e mantenha a distância mínima da Queen
+        potentialPosition.x = Mathf.Clamp(potentialPosition.x, Mathf.Max(minX, queen.position.x - minDistanceFromQueen), Mathf.Min(maxX, queen.position.x + minDistanceFromQueen));
+
+        // Aplica a nova posição ao Jack
         transform.position = potentialPosition;
     }
 
@@ -40,14 +37,7 @@ public class JackBehavior : MonoBehaviour
         {
             Debug.Log("Game Over: Jack caught the King!");
             Time.timeScale = 0; // Congela o jogo
-            if (gameOverPanel != null)
-            {
-                gameOverPanel.SetActive(true); // Ativa o painel de Game Over
-            }
-            else
-            {
-                Debug.LogError("Game Over Panel não está configurado no JackBehavior.");
-            }
+            gameOverPanel.SetActive(true); // Ativa o painel de Game Over
             gameObject.SetActive(false); // Desativa Jack
         }
     }
